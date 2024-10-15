@@ -1,0 +1,108 @@
+
+.todo {
+    background: #fce4fb5F;
+    border: 2px solid #fce4fb;
+    box-shadow: 0px 5px 20px -5px #00000000;
+    border-radius: 20px;
+    min-width: var(--todo-minwidth);
+    padding: 12px;
+    transition-property: box-shadow, scale;
+    transition-duration: 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    z-index: 10;
+
+    &[data-todo*="\"status\"\: true"] {
+        opacity: 0.5;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    & > * {
+        position: relative;
+        z-index: 1;
+    }
+}
+
+.todo button {
+    appearance: none;
+    background: unset;
+    border: unset;
+    position: relative;
+    min-width: 48px;
+    min-height: 48px;
+    padding: 0;
+    cursor: pointer;
+}
+
+.todo button::before {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    background: #ffffff00;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: background 0.3s
+}
+.todo button:hover::before {
+    background: #ffffff4F;
+}
+
+.todo:hover {
+    box-shadow: 0px 5px 20px -5px #000000AF;
+    scale: 1.25;
+    z-index: 20;
+}
+
+
+.todo div:has(.complete-btn) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.complete-btn {
+    display: inline-block;
+    font-family: 'Material Symbols Outlined';
+    font-size: 24px;
+}
+.complete-btn + p {
+    display: inline-block;
+    margin: 0 auto;
+}
+.delete-todo {
+    float: right;
+}
+.delete-todo:hover::before {
+    background: #ff00004F !important;
+}
+
+[data-todo*='"status": true'] .complete-btn {
+    color: green;
+}
+
+.todo .blur {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: calc(100% + 10px);
+    height: calc(100% + 10px);
+    z-index: 1;
+    /* filter: blur(4px);
+    background: url(https://wallpapercave.com/wp/wp3742844.jpg);
+    background-size: auto 100vh;
+    background-position: -2241px -917.5px; */
+    /* backdrop-filter: blur(10px); */
+    border-radius: 20px;
+}
+
+.todo:hover .blur {
+    backdrop-filter: blur(10px);
+}

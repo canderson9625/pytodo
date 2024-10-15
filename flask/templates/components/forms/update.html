@@ -1,0 +1,14 @@
+{% import "components/forms/forms.html" as forms %}
+
+<section>
+    <form is="sealed-form">
+        <div class="blurred-bg"></div>
+        {% call forms.fieldset(todo.title) %}
+            {{ forms.input('text', "title", todo.title, "placeholder-label unsealed") }}
+            {{ forms.input('textarea', "description", todo.description or "", "placeholder-label unsealed") }}
+            {{ forms.completeBy(True, todo.due_date) }}
+            {{ forms.tagsMenu(True, todo, tags, json) }}
+        {% endcall %}
+        <button type="submit">Submit</button>
+    </form>
+</section>

@@ -1,0 +1,28 @@
+<article class="todo" data-todo="{{ json.dumps({'todo_id': todo.todo_id, 'title': todo.title, 'description': todo.description, 'status': todo.status}) }}">
+    <div class="blur"></div>
+    <div>
+        <button class="complete-btn" aria-label="Complete Todo">{{"done" if todo.status else "done_outline"}}</button>
+        <p class="toggle-todo">Status: {{ "Complete" if todo.status else "Incomplete" }}</p>
+        <button class="delete-todo material-symbols-outlined" aria-label="Delete Todo">delete</button>
+    </div>
+    <h2 class="title header-2">
+        {{ todo.title }}
+        {% if todo.due_date %}
+            | <span class="complete_by">{{ todo.due_date }}</span>
+        {% endif %}
+    </h2>
+
+    {% if todo.tags %}
+        {% if todo.tags[0] != None %}
+            <p class="tags">
+            {% for tag in todo.tags %}
+                <span>{{ tag }}</span>
+            {% endfor %}
+            </p>
+        {% endif %}
+    {% endif %}
+
+    {% if todo.description %}
+        <p>{{ todo.description }}</p>
+    {% endif %}
+</article>

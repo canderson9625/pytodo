@@ -1,0 +1,6 @@
+#modal--update {
+
+    & section:not(:last-of-type) {
+        display: none;
+    }
+}

@@ -1,0 +1,33 @@
+services:
+  todo:
+    # using dockerfile to copy and execute requirements
+    build: .
+    command: gunicorn -w 1 -b :9080 app:app --chdir /code
+    ports:
+      - "9080:9080"
+    networks:
+      - todo
+
+  todo_db:
+    image: postgres
+    volumes:
+      - ./volumes/todo_db/todo_schema.sql:/root/schema.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - todo
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - todo
+
+networks:
+  todo:

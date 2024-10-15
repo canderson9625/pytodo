@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{# main #}
+{% block content %}
+<section>
+    {# todos #}
+    {% for x in list %}
+        {% with todo=x, json=json %}
+            {% include "components/todo.html" %}
+        {% endwith %}
+    {% endfor %}
+
+    {# <div class="blur">
+     <div class="blend-mode">
+     </div>
+    </div> #}
+</section>
+
+{# <style>
+#main > section:first-child {
+    padding: 10px;
+
+    & > .blur {
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        left: 0;
+        top: 0;
+        /* filter: blur(4px); */
+        backdrop-filter: blur(0px);
+        z-index: 10;
+        pointer-events: none;
+        transition: backdrop-filter 0.3s;
+    }
+
+    &:has(.todo:hover) {
+        & > .blur {
+            animation: focus 0.5s ease-in;
+        }
+    }
+}
+
+@keyframes focus {
+    from {
+        backdrop-filter: blur(0px);
+    }
+    10% {
+        backdrop-filter: blur(10px);
+    }
+    20% {
+        backdrop-filter: blur(3px);
+    }
+    to {
+        backdrop-filter: blur(0px);
+    }
+}
+</style> #}
+{% endblock %}
+
+{% block breadcrumb %}
+{{ title | capitalize }}
+{% endblock%}
+
+{# {% block script %}
+<script async type="module" src="{{ url_for('static', filename='assets/js/views/abstract.js') }}"></script>
+{% endblock %} #}

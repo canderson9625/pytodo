@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App | {{ title | capitalize }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Edu+VIC+WA+NT+Beginner:wght@400..700&family=Signika+Negative:wght@300..700&display=swap&family=Material+Symbols+Outlined">
+    <link href="https://fonts.googleapis.com/css2?family=Edu+VIC+WA+NT+Beginner:wght@400..700&family=Signika+Negative:wght@300..700&display=swap&family=Material+Symbols+Outlined" rel="stylesheet">
+    <link rel="preload" as="style" href="{{ url_for('static', filename='assets/css/main.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" />
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>
+</head>
+<body >
+    <header>
+        <h1>{{ title | capitalize }}</h1>
+    </header>
+    
+    <nav id="universal-menu" role="menu" aria-expanded="false">
+        <a href="#main">Skip to content</a>
+        <button>Expand</button>
+        <ul inert>
+            <li><button id="create-todo">Create Todo</button></li>
+            {# <li>
+                <div class="breadcrumb">
+                    {% block breadcrumb %}{% endblock%}
+                </div>
+                <!-- Pagination -->
+                {% if paged != undefined and paged != None %}
+                    {% with (page, pagesize, lastpage) = paged %}
+                        {% include "components/pagination.html" %}
+                    {% endwith %}
+                {% endif %}
+            </li> #}
+            <li><button id="search-todo">Search Todos</button></li>
+        </ul>
+    </nav>
+
+    <main class="content" id="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include "components/modal.html" %}
+    
+    {# <footer>
+        <nav>
+            <a href="/create">Create</a>
+            <a href="/">Read</a>
+            <a href="/update">Update</a>
+            <a href="/delete">Delete</a>
+        </nav>
+    </footer> #}
+    <canvas id="confettiContainer"></canvas>
+    {% block script %}{% endblock %}
+    <script async type="module" src="{{ url_for('static', filename='assets/client.js')}}"></script>
+</body>
+</html>

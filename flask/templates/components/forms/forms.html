@@ -1,0 +1,93 @@
+
+{% macro input(type='text', name='', value='', class='') %}
+    {% set identifier = name | replace(" ", "_") | urlencode %}
+    <div class="{{ class }}">
+        <label for="{{ identifier }}">{{ name }}</label>
+        {% if type == "datetime-local" %}
+            <input type="{{ type }}" id="{{ identifier }}" name="{{ identifier }}" data-network-value="{{ value }}" autocomplete min=""/>
+        {% elif type == "textarea" %}
+            <textarea id="{{ identifier }}" name="{{ identifier }}">{{ value }}</textarea>
+        {% else %}
+            <input type="{{ type }}" id="{{ identifier }}" name="{{ identifier  }}" value="{{value}}" />
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro fieldset(title='Todo') %}
+    <fieldset>
+        <legend>{{ title }}</legend>
+        {{ caller() }} {# put call content in macro #}
+    </fieldset>
+{% endmacro %}
+
+{% macro multiSelect(update=False, todo=None, name='', create='', json=json) %}
+{% set title = name | title %}
+{% set name = name | trim | lower | replace(' ', '_') %}
+
+    <div class="multi-select">
+        <label for="{{ name }}">{{ title }}</label>
+        <div id="dropdown-{{ name }}" role="combobox" aria-expanded="false" tabindex="1">
+            {% if name == 'completeby' %}
+                <input type="text" id="{{ name }}" name="{{ name }}" autocomplete="off" placeholder="Today, Tomorrow, ..." style="text-align: center;">
+            {% else %}
+                <input type="text" id="{{ name }}" name="{{ name }}" autocomplete="off">
+            {% endif %}
+            <button class="adornment adornment--end" type="button" aria-label="Create {{ create }}">add</button>
+            <ul id="dropdown-list-{{ name }}" role="listbox" aria-labelledby="dropdown" {{ 'inert' if update == false else '' }}>
+                {{ caller() }} 
+            </ul>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro tagsMenu(update=False, todo=None, tags=None, json=json) %}
+    {% call multiSelect(update, todo, 'tags', 'tag', json) %}
+        {% for tag in tags %}
+            {# selected tags #}
+            {% for tdTag in todo.tags %}
+                {% if tdTag == tag.title %}
+                    <li class="selected">
+                        <span contenteditable="plaintext-only">{{ tag.title }}</span>
+                        <button class="adornment adornment--end" data-tag="{{json.dumps(tag)}}" data-selected="true" type="button" aria-label="Remove Tag">
+                            done_outline
+                        </button>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {# available tags #}
+            {% if tag.title not in todo.tags %}
+                <li>
+                    <span contenteditable="plaintext-only">{{ tag.title }}</span>
+                    <button class="adornment adornment--end" data-tag="{{json.dumps(tag)}}" type="button" aria-label="Add Tag">done</button>
+                </li>
+            {% endif %}
+        {% endfor %}
+    {% endcall %}
+{% endmacro %}
+
+{% macro completeBy(update=False, value=None) %}
+    {% call multiSelect(update, None, 'date picker') %}
+        <li><button type="button" class="reset" aria-label="Reset Field">Reset</button></li>
+        <li><button type="button" class="today">Today</button></li>
+        <li><button type="button" class="tomorrow">Tomorrow</button></li>
+        <li>
+            <button type="button" class="weekday">Weekday</button>
+            <ol inert>
+                <li><button type="button" class="sunday">Sunday</button></li>
+                <li><button type="button" class="monday">Monday</button></li>
+                <li><button type="button" class="tuesday">Tuesday</button></li>
+                <li><button type="button" class="wednesday">Wednesday</button></li>
+                <li><button type="button" class="thursday">Thursday</button></li>
+                <li><button type="button" class="friday">Friday</button></li>
+                <li><button type="button" class="saturday">Saturday</button></li>
+            </ol>
+        </li>
+        <li><button type="button" class="next-week">Next Week</button></li>
+        <li><button type="button" class="next-month">Next Month</button></li>
+        <li><button type="button" class="next-year">Next Year</button></li>
+        <li>
+            {{ input('datetime-local', "complete_by", value, "")}}
+        </li>
+    {% endcall %}
+{% endmacro %}

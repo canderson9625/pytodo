@@ -1,0 +1,284 @@
+multi-select,
+.multi-select,
+/* parent selector */
+:has( > [role="combobox"]) {
+    max-height: unset !important;
+
+    /* self selector */
+    & :is([role="combobox"]) {
+        border: var(--border, 2px solid black);
+        border-radius: var(--border-radius, 8px);
+        position: relative;
+
+        & > input {
+            border: unset;
+            border-bottom: 0px solid black;
+            position: relative;
+            z-index: 1;
+
+            &:focus-visible {
+                border: var(--border);
+                margin: -2px -2px 0;
+                max-width: unset;
+                width: calc(100% + 4px);
+            }
+        }
+
+        & .adornment {
+            position: absolute;
+            top: var(--offset);
+            z-index: 1;
+            font-family: 'Material Symbols Outlined';
+            background: unset;
+            border: unset;
+            border-radius: 50%;
+            padding: var(--padd);
+            aspect-ratio: 1 / 1;
+            height: auto;
+            line-height: 1em;
+
+            &.adornment--end {
+                right: var(--offset);
+            }
+
+            &:hover {
+                background: #0000002f;
+            }
+        }
+
+        /* focused */
+        &[aria-expanded="true"],
+        &:focus-within,
+        &:has(input:focus) {
+
+            & label {
+                left: var(--offset);
+                top: calc(var(--offset) * -1);
+                transform: translateY(-50%);
+            }
+
+            & input {
+                border-bottom-width: 2px;                
+            }
+
+            & ul {
+                opacity: 1;
+                pointer-events: auto;
+                padding: var(--padding, 8px);
+                height: 100%;
+                height: calc-size(auto);
+                transform: translateY(0)
+            }
+        }
+    }
+
+    /* listbox selector */
+    & ul:is([role="listbox"]) {
+        list-style: none;
+        margin: 0;
+        padding: 0 8px;
+        position: relative;
+        opacity: 0;
+        pointer-events: none;
+        transition-property: padding, height, max-height, transform, scale, opacity;
+        transition-duration: 0.3s;
+        width: 100%;
+        height: 0px;
+        transform-origin: 50% 0%;
+        transform: translateY(-25px);
+        overflow: hidden;
+        background: var(--primary-bg);
+
+        & li {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            cursor: pointer;
+            padding: var(--padd);
+            transition: padding 0.3s;
+
+            &:is(:hover, :focus-within) {
+                padding: calc(var(--padding) * 1.5) var(--padd);
+            }
+
+            & button {
+                width: 100%;
+                border: unset;
+                border-radius: var(--border-radius);
+                padding: var(--padding);
+                transition: padding 0.3s;
+            }
+
+            & :has(label ~ input) {
+                width: 100%;
+
+                & label {
+                    display: none;
+                }
+            }
+
+            & .adornment {
+                --offset: 15px;
+                width: auto;
+                aspect-ratio: 1 / 1;
+                height: 48px;
+                max-height: calc(100% - var(--offset));
+                font-size: inherit;
+                font-family: 'Material Symbols Outlined';
+                background: unset;
+                border: unset;
+                border-radius: 50%;
+                line-height: 1em;
+                text-align: right;
+                padding: 0px;
+                display: grid;
+                place-items: center;
+                top: 50%;
+                transform: translateY(-50%);
+
+                &.adornment--end {
+                    right: calc(var(--offset) / 2);
+                }
+            }
+
+            &.selected {
+                background-color: var(--green);
+            }
+        }
+
+        & [inert] {
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+        }
+    }
+}
+
+/* tags multi */
+multi-select :is([id*="tag"][role="listbox"]),
+.multi-select :is([id*="tag"][role="listbox"]) {
+    max-height: 150px;
+    overflow: auto;
+    
+    & .adornment::before {
+        content: 'done'
+    }
+
+    & li:is(:hover, :focus-within) {
+        transition: padding 0.3s, background 0.3s;
+
+        &:not(.selected) {
+            background-color: var(--secondary-bg);
+        }
+        
+        &.selected {
+            background-color: var(--yellow);
+            
+            &:has(button:is(:hover, :focus-visible)) {
+                background-color: var(--red);
+
+                & .adornment:is(:hover, :focus-visible)::before {
+                    content: 'delete';
+                }
+            }
+        }
+
+        .adornment {
+            padding: 0px;
+        }
+    }
+}
+
+/* datepicker multi select */
+multi-select :has(input[type*="date"]):is([role="combobox"]),
+.multi-select :has(input[type*="date"]):is([role="combobox"]) {
+    & :is([role="listbox"]) {
+        max-height: 0px;
+
+        & li {
+
+            &:is(:hover, :focus-within) {
+                padding: var(--padd);
+
+                & button {
+                    &:is(:hover, :focus-within) {
+                        padding: calc(var(--padding) * 1.5) var(--padd);
+                    }
+                }
+            }
+
+            &:nth-child(odd) button {
+                background: var(--primary-bg);
+            }
+            &:nth-child(even) button {
+                background: var(--secondary-bg);
+            }
+
+            &:last-child:has(input[type*="date"]) {
+                margin-top: calc(var(--padding) * 2);
+            }
+        }
+
+        /* nested list style */
+        & li:has(ol, ul) {
+            & ol,
+            & ul {
+                display: block;
+
+                &[inert] {
+                    display: none;
+                }
+            }
+
+            & li {
+                display: block;
+            }
+
+            & button {
+                transition: padding 0.3s, box-shadow 1s;
+                position: relative;
+                z-index: 1;
+
+                &:hover,
+                &:focus {
+                    box-shadow: 0px 0px 40px 30px #ffffff;
+                }
+            }   
+        }
+
+        /* style others when nested list is shown */
+        &:has(li :is(ol, ul)) {
+            & li {
+                display: none;
+            }
+
+            & li:has(:is(ol, ul)) {
+                display: block;
+
+                & li {
+                    display: block;
+
+                    & button:hover,
+                    & button:focus {
+                        box-shadow: unset;
+                    }
+                }
+            }
+        }
+        /* style others when nested list is hidden */
+        &:has(li :is(ol[inert], ul[inert])) {
+            & li {
+                display: block;
+            }
+        }
+    }
+
+    /* focused */
+    &[aria-expanded="true"],
+    &:focus-within,
+    &:has(input:focus) {
+        & :is([role="listbox"]) {
+            max-height: 450px;
+        }
+    }
+}

@@ -1,0 +1,6 @@
+.ignore
+
+*.fig
+venv
+!venv/requirements.txt
+__pycache__

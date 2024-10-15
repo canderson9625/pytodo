@@ -1,0 +1,12 @@
+<dialog id="modal" class="modal" role="dialog" aria-labelledby="title" aria-describedby="description" aria-expanded="false" inert>
+    <button aria-label="Close Dialog" class="material-symbols-outlined" id="close-dialog" aria-hidden="true">close</button>
+    <dialog id="modal--search" aria-modal="true">
+        {% include "components/forms/filter.html" %}
+    </dialog>
+    <dialog id="modal--create" aria-modal="true">
+        {% include "components/forms/create.html" %}
+    </dialog>
+    <dialog id="modal--update" aria-modal="true">
+        {# populated via js #}
+    </dialog>
+</dialog>

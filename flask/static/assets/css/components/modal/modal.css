@@ -1,0 +1,138 @@
+@import url("./create.css");
+@import url("./update.css");
+@import url("./alert.css");
+
+#modal {
+   --opacity: opacity 100ms;
+   /* --opacity: opacity 0ms; */
+   --filter: filter 500ms;
+   --scale: scale 500ms;
+   --transition: var(--scale), var(--filter), var(--opacity);
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100%;
+   min-height: 100%;
+   display: block;
+   min-width: unset;
+   max-height: 100vh;
+   max-width: unset;
+   background-color: #de93d5Af;
+   transition: var(--transition);
+   border: unset;
+   z-index: 100;
+   overflow: hidden;
+
+   & dialog {
+      display: block;
+      min-width: unset;
+      transition: var(--transition);
+      background: #fce4fbFF;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      position: absolute;
+      padding: clamp(20px, 15vw, 400px) 0px;
+      overflow: auto;
+
+      &>* {
+         max-width: min(500px, 80%);
+         margin: 0 auto;
+      }
+
+      &:has(.blurred-bg) {
+         background: transparent;
+         border: unset;
+      }
+
+      /* position: absolute;
+        left: 50%;
+        transform: translateX(-50%); */
+   }
+
+   &[aria-expanded="true"] {
+      opacity: 1;
+      scale: 1;
+      filter: blur(0px);
+
+      & dialog[aria-hidden="false"] {
+         opacity: 1;
+         scale: 1;
+         filter: blur(0px);
+      }
+
+      & dialog[aria-hidden="true"] {
+         pointer-events: none;
+         opacity: 0;
+         scale: 1.15;
+         filter: blur(10px);
+      }
+   }
+
+   &[aria-expanded="false"] {
+      pointer-events: none;
+      opacity: 0;
+      scale: 1.15;
+      filter: blur(10px);
+
+      & dialog[aria-hidden="false"] {
+         opacity: 1;
+      }
+
+      & dialog[aria-hidden="true"] {
+         pointer-events: none;
+         opacity: 0;
+      }
+   }
+
+
+   & #close-dialog {
+      appearance: none;
+      background: unset;
+      border: unset;
+      color: white;
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      top: 50px;
+      right: 50px;
+      cursor: pointer;
+      transition: background 0.3s;
+      z-index: 1000;
+   }
+
+   & #close-dialog::before {
+      content: '';
+      display: block;
+      position: absolute;
+      width: 80%;
+      height: 80%;
+      border-radius: 50%;
+      background: #ffffff00;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      transition: background 0.3s
+   }
+
+   & #close-dialog:hover::before {
+      background: #ffffff4F;
+   }
+}
+
+#modal::before {
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   content: '';
+   display: block;
+   z-index: -1;
+   background-color: #000000AF;
+}
+
+body:has(#modal[aria-expanded="true"]) {
+   overflow: hidden;
+}

@@ -1,0 +1,30 @@
+{% import "components/forms/forms.html" as forms %}
+
+<form is="sealed-form">
+    <div class="blurred-bg"></div>
+    {% call forms.fieldset('Create Todo') %}            
+        {{ forms.input('text', "title", '', "placeholder-label") }}
+        {{ forms.input('textarea', "description", '', "placeholder-label")}}
+        {{ forms.completeBy() }}
+        {{ forms.tagsMenu(False, None, tags, json) }}
+    {% endcall %}
+    <button type="submit">Submit</button>
+</form>
+
+{# <multi-select class="multi-select">
+    <label slot="label" for=""></label>
+    <div slot="combobox-content">
+        <input type="text">
+        <button type="button"></button>
+    </div>
+    <div>
+        <button></button>
+        <button></button>
+        <button></button>
+        <button></button>
+    </div>
+</multi-select>
+{# <multi-select></multi-select> #}
+
+{# <date-picker>
+</date-picker> #}

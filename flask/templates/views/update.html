@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% import "components/forms/forms.html" as forms %}
+
+{# main #}
+{% block content %}
+<section>
+    {% set todos = list[:] %}
+    <form>
+        <ul>
+            {% for todo in todos %}
+                <li>
+                    <a href="{{ url_for('single_route_handler', operation='update', id=todo.todo_id) }}" >
+                        {{ todo.title }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </form>
+</section>
+{% endblock %}
+
+{% block breadcrumb %}
+<a href="/">Home</a> / {{ title | capitalize }}
+{% endblock %}

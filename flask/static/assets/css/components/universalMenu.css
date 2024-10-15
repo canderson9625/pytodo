@@ -1,0 +1,147 @@
+
+#universal-menu {
+    --cursor: grab;
+    position: fixed;
+    right: 50px;
+    bottom: 50px;
+    background: #ffffff3f;
+    border: 2px solid var(--tag-2);
+    border-radius: 50%;
+    width: calc(var(--font-heading) * 4);
+    height: calc(var(--font-heading) * 4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    
+    & * {
+        mix-blend-mode: normal;
+    }
+
+    & > button {
+        cursor: var(--cursor);
+        width: 100%;
+        height: 100%;
+        display: grid;
+        border: unset;
+        border-radius: 50%;
+        place-items: center;
+        background: transparent;
+        transition: box-shadow 150ms, background 150ms;
+        box-shadow: inset 0px 0px 10px 0px #00000000;
+        text-transform: uppercase;
+        font-size: var(--font-body);
+        font-weight: bold;
+        position: relative;
+        z-index: 10;
+
+        &:active {
+            /* background: #00000009; */
+            box-shadow: inset 0px 0px 20px 0px #0000003f;
+        }
+    }
+
+    & > a {
+        clip: rect(0, 0, 0, 0);
+        overflow: hidden;
+        position: absolute;
+        height: 1px;
+        width: 1px;
+
+        &:focus {
+            z-index: 9999;
+            position: fixed;
+            top: 5px;
+            left: 5px;
+            background: #121212;
+            border: 2px solid #eaeaea;
+            font-weight: bold;
+            color: #eaeaea;
+            font-size: 32px;
+            padding: 15px;
+            overflow: auto;
+            width: auto;
+            height: auto;
+            clip: auto;
+        }
+    }
+
+    & > ul {
+        pointer-events: none;
+        scale: 0.8;
+        opacity: 0;
+        
+        list-style: none;
+        width: 250px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        padding: 25px 0;
+        transform-origin: 100% 0%;
+        transform: translate(0, -100%);
+        transition-property: scale, opacity, transform;
+        transition-duration: 0.1s;
+        z-index: 1;
+
+        & li {
+            background: white;
+            padding: 8px;
+            margin-bottom: 25px;
+            transition-property: scale, opacity, transform;
+            transition-duration: 0.3s;
+            display: inline-block;
+            font-size: 20px;
+            float: right;
+
+            &:has(button) {
+                padding: 0px
+            }
+
+            & button {
+                background: unset;
+                padding: 8px;
+                border: unset;
+                font-size: inherit;
+            }
+
+            & input {
+                font-size: inherit;
+            }
+
+        }
+    }
+}
+
+#universal-menu[aria-expanded="true"] {
+    & ul {
+        pointer-events: auto;
+        opacity: 1;
+        scale: 1;
+        transition-duration: 0.3s;
+    }
+}
+
+#confettiContainer {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+}
+
+body {
+    & #universal-menu > button {
+        transition: color 0.3s;
+    }
+    &:has(dialog[aria-expanded="true"]) {
+        & #universal-menu {
+            /* mix-blend-mode: difference; */
+            & > button {
+                color: white;
+                /* filter: invert(1); */
+            }
+        }
+    }
+}

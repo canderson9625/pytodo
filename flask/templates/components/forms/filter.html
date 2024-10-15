@@ -1,0 +1,13 @@
+{% import "components/forms/forms.html" as forms %}
+
+<form is="sealed-form">
+    <div class="blurred-bg"></div>
+    {% call forms.fieldset('Filter Results') %}
+        {{ forms.input('text', "title", "", "placeholder-label") }}
+        {# {{ forms.input('textarea', "description", "", "placeholder-label") }} #}
+        {# {{ forms.completeBy() }} #}
+        {{ forms.input('checkbox', "completion status", "", "placeholder-label") }}
+        {{ forms.tagsMenu(False, "", tags, json) }}
+    {% endcall %}
+    <button type="submit">Submit</button>
+</form>

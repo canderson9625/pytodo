@@ -1,0 +1,170 @@
+@import url("views/index.css");
+
+:root {
+    --font-breakpoint-min: 750;
+    --font-breakpoint-max: 1500;
+    
+    --font-heading-size-min: 28;
+    --font-heading-size-max: 42;
+    --font-heading-pixels-min: calc(var(--font-heading-size-min) * 1px);
+    --font-heading-pixels-max: calc(var(--font-heading-size-max) * 1px);
+    /* --font-heading-min: (28px @ 750px) units that scales with current viewport */
+    /* --font-heading-min: calc((var(--font-heading-size-min) / var(--font-breakpoint-min)) * 100vw); */
+    /* --font-heading-max: (42px @ 1920px) units that scales with current viewport */
+    --font-heading-max: calc((var(--font-heading-size-max) / var(--font-breakpoint-max)) * 100vw);
+    /* crossfade the min values as they scale */
+    /* --font-heading-middle: min(var(--font-heading-min), var(--font-heading-max)); */
+    --font-heading: clamp(var(--font-heading-pixels-min), var(--font-heading-max), var(--font-heading-pixels-max));
+
+    --font-body-size-min: 13;
+    --font-body-size-max: 22;
+    --font-body-pixels-min: calc(var(--font-body-size-min) * 1px);
+    --font-body-pixels-max: calc(var(--font-body-size-max) * 1px);
+    /* --font-body-min: calc((var(--font-body-size-min) / var(--font-breakpoint-min)) * 100vw); */
+    --font-body-max: calc((var(--font-body-size-max) / var(--font-breakpoint-max)) * 100vw);
+    /* --font-body-middle: min(var(--font-body-min), var(--font-body-max)); */
+    --font-body: clamp(var(--font-body-pixels-min), var(--font-body-max), var(--font-body-pixels-max));
+
+
+    /* todo component */
+    --todo-minwidth: 250px;
+
+    /* Light Palette */
+    --background: #FFF;
+    --accent: #FDFAFA;
+    --primary: #FFCAD4;
+    --secondary: #F4ACB7;
+    --tertiary: #9D8189;
+
+    /* tags */
+    /* --red: #EFC7C2;
+    --pink: #FCE5E4;
+    --blue: #80A1D4;
+    --green: #68A691;
+    --yellow: #FFE5D4;
+    --purple: #694F5D; */
+
+    --red: #fad6d6;
+    --pink: #f9cfec;
+    --blue: #ccc9f1;
+    --green: #c4f2d6;
+    --yellow: #ebecb4;
+    --purple: #cd93de;
+
+    --tag-1: #fad6f0;
+    --tag-2: #f9cfec;
+    --tag-3: #f0c9f1;
+    --tag-4: #f2c4e9;
+    --tag-5: #ecb4e5;
+    --tag-6: #de93d5;
+
+    --cotton-candy-accent: hsla(193, 81%, 84%, 1);
+    --cotton-candy: linear-gradient(42deg, hsla(313, 39%, 93%, 1) 0%, hsla(320, 78%, 79%, 1) 50%, hsla(193, 81%, 84%, 1) 100%);
+}
+
+.special-font {
+    font-family: "Edu VIC WA NT Beginner", cursive;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.signika-negative {
+    font-family: "Signika Negative", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.symbols {
+    font-family: 'Material Symbols Outlined';
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    /* filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#f4e6f1", endColorstr="#f3a0d7", GradientType=1 ); */
+    /* https://coolors.co/gradient-maker/f4e6f1-f3a0d7-b3e8f7 */
+    /* background: var(--background); */
+    /* https://coolors.co/gradient-maker/f4e6f1-f3a0d7-b3e8f7 */
+    background: hsla(313, 39%, 93%, 1);
+    background: linear-gradient(42deg, hsla(313, 39%, 93%, 1) 0%, hsla(320, 78%, 79%, 1) 50%, hsla(193, 81%, 84%, 1) 100%);
+    background: -moz-linear-gradient(42deg, hsla(313, 39%, 93%, 1) 0%, hsla(320, 78%, 79%, 1) 50%, hsla(193, 81%, 84%, 1) 100%);
+    background: -webkit-linear-gradient(42deg, hsla(313, 39%, 93%, 1) 0%, hsla(320, 78%, 79%, 1) 50%, hsla(193, 81%, 84%, 1) 100%);
+    background-repeat: no-repeat;
+    background-size: cover;
+    /* background-attachment: fixed; */
+
+    /* scrollbar-gutter: stable; */
+    scroll-behavior: smooth;
+}
+
+dialog:has(dialog) {
+    /* maintain sizing when scrollbar appears or disappears */
+    scrollbar-gutter: auto;
+    
+    & dialog {
+        scrollbar-gutter: stable;
+    }
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 8px 20px 40px;
+    font-family: "Signika Negative", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    overflow-x: hidden;
+
+    & * {
+        box-sizing: border-box;
+    }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Edu VIC WA NT Beginner", cursive;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+button, 
+a {
+    cursor: pointer;
+}
+
+canvas {
+    position: absolute;
+}
+
+:has( > .blurred-bg) {
+    background: transparent;
+    position: relative;
+    .blurred-bg {
+        --blur: 20px;
+        filter: blur(var(--blur));
+        position: absolute;
+        width: calc(100% + var(--blur));
+        height: calc(100% + var(--blur));
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: -1;
+        background: var(--blurred-bg, #ffffff5f);
+    }
+}
+
+/* *:focus-visible {
+    border: 2px solid magenta !important;
+} */

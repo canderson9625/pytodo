@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+<!-- Main -->
+{% block content %}
+    <section>
+        {% include "components/forms/create.html" %}
+    </section>
+{% endblock %}
+<!-- /Main -->
+
+{% block breadcrumb %}
+<a href="/">Home</a> / {{ title | capitalize }}
+{% endblock%}
+
+{% block script %}
+{# <script async type="module" src="{{ url_for('static', filename='assets/js/views/abstract.js')}}"></script>
+<script async type="module" src="{{ url_for('static', filename='assets/js/components/form.js')}}"></script>
+<script async type="module" src="{{ url_for('static', filename='assets/js/components/tags.js')}}"></script> #}
+<script async type="module" src="{{ url_for('static', filename='assets/js/views/create.js') }}"></script>
+{% endblock %}

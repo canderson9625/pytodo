@@ -1,0 +1,67 @@
+<script>
+    const template = document.createElement('template');
+    template.innerHTML = `
+    <style>
+        :host {
+            background: green;
+
+            & ::slotted(p) {
+                color: red;
+            }
+
+            & details {
+                background: blue;
+            }
+        }
+        
+        date-picker::part(style-me) {
+            background: red;
+        }
+    </style>
+    <slot name="value1"><p>Empty</p></slot>
+    <details part="style-me">
+        <summary>
+            <slot name="button"><slot name="value2"><p>Nested Slots do not work</p></slot></slot>
+        </summary>
+        <div></div>
+    </details>
+    `
+
+    class datePickerServerElement extends HTMLElement {
+
+        shadowRoot;
+        html = {
+
+        };
+
+        constructor() {
+            super().attachShadow({ mode: "open" }).append(template.content.cloneNode(true));
+            this._internals = this.attachInternals(); 
+        }
+
+        connectedCallback() {
+            // attached to the DOM
+            console.log('attached', this);
+        }
+
+        disconnectedCallback() {
+            console.log('removed');
+        }
+
+        adoptedCallback() {
+            console.log("Custom element moved to new page.");
+        }
+
+        attributeChangedCallback(name, oldValue, newValue) {
+            console.log(`Attribute ${name} has changed.`);
+        }
+    }
+
+    customElements.define("date-picker", datePickerServerElement);
+</script>
+
+<date-picker advanced>
+    <p slot="value1">value</p>
+    <span slot="button">test</span>
+    <span slot="value2">value2</span>
+</date-picker>

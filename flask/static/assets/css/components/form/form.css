@@ -1,0 +1,322 @@
+@import url("./multi-select.css");
+
+:root {
+
+}
+
+/* forms */
+form,
+.form {
+    --align: start;
+    --grid-template: auto / repeat(2, minmax(auto, 1fr));
+    --primary-bg: #f4f4f4;
+    --secondary-bg: #E0E0E0;
+    --blurred-bg: var(--cotton-candy, #fce4fbfF);
+    --input-bg: var(--primary-bg);
+    --color: #2d2d2d;
+    --padding: 0.5em;
+    --padd: calc(var(--padding) / 2);
+    --border-radius: 4px;
+    --font-family: "Signika Negative", "roboto";
+    --label-font: max(0.75em, 12px);
+    --border: 2px solid black;
+    --gradient-angle: 0deg;
+    --gradient: linear-gradient(var(--gradient-angle), var(--secondary-bg) 33%, var(--primary-bg) 66%, var(--secondary-bg));
+
+    text-align: var(--align);
+
+    & button {
+        background: var(--gradient);
+        padding: var(--padd) var(--padding);
+        font-size: max(0.8em, 12px);
+        border: var(--border);
+        border-radius: var(--border-radius);
+
+        &:hover {
+            background-blend-mode: color-dodge;
+        }
+    }
+    
+    & fieldset {
+        display: grid;
+        place-items: stretch;
+        grid-template: var(--grid-template);
+        padding: calc(var(--padding) * 2);
+        padding-bottom: calc(var(--padding) * 4);
+        padding-top: 0;
+        border: var(--border);
+        border-radius: var(--border-radius);
+        border-color: var(--pink, #fce4fbfF);
+
+        & legend {
+            font-size: var(--font-heading);
+        }
+
+        /* generic container selector */
+        & > *:has( > label, > input) {
+            font-size: var(--font-body);
+            font-family: var(--font-family);
+            grid-area: span 1 / span 2;
+            width: 100%;
+            margin-top: calc(var(--font-body) * 2);
+
+            &:first-of-type {
+                margin-top: calc(var(--font-body) * 1.5);
+            }
+
+            & > label {
+                padding: var(--padd) var(--padding);
+                border-radius: var(--border-radius);
+                border: var(--border);
+                background: var(--input-bg);
+                font-size: var(--label-font);
+                font-family: inherit;
+                cursor: text;
+            }
+            
+            & input,
+            & textarea,
+            & select {
+                font-size: var(--font-body);
+                padding: var(--padding);
+                background: var(--input-bg);
+                border: var(--border);
+                border-radius: var(--border-radius);
+                font-family: inherit;
+                min-height: max(2.25em, 45px);
+                width: 100%;
+                max-width: 100%;
+                resize: vertical;
+                max-height: 255px;
+                cursor: text;
+                vertical-align: top;
+
+                &[type="checkbox"] {
+                    cursor: pointer;
+                    appearance: none;
+                    margin: 0;
+                    max-height: 100%;
+                    --content: "Unchecked";
+
+                    &::before {
+                        content: var(--content, "Unchecked");
+                        display: grid;
+                        place-items: center;
+                        width: 100%;
+                        height: 100%;
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                    }
+
+                    &:checked {
+                        --content: "Checked";
+                        background: var(--secondary-bg);
+                        
+                        &::before {
+                            content: var(--content, "Checked");
+                        }
+                    }
+                }
+            }
+
+            & :has(textarea) {
+                border: unset;
+                background: transparent; 
+
+                & textarea {
+                    border: var(--border);
+                }
+            }
+
+            &:has(input[type="checkbox"]:focus-visible) {
+                outline-color: auto; 
+                /* outline-color: rgb(77, 144, 254); #4D90FE */
+                outline-color: -webkit-focus-ring-color; 
+                outline-style: auto;
+                outline-width: 5px;
+
+                & input[type="checkbox"] {
+
+                    &:focus-visible {
+                        outline: unset;
+                    }
+                }
+            }
+
+            & + *:has( > label, > input) {
+                
+            }
+        }
+
+        /* valid component containers */
+        & :is(.placeholder-label, .multi-select) {
+            --offset: var(--padding);
+            position: relative;
+
+            &:is(.multi-select) {
+                padding: 0;
+                border: unset;
+            }
+
+            & label {
+                position: absolute;
+                left: var(--offset);
+                top: calc(var(--offset) * -1);
+                transform: translateY(-50%);
+                transition: transform, left, top, border-color;
+                transition-duration: 0.3s;
+                text-transform: capitalize;
+                z-index: 2;
+            }
+        }
+    }
+
+    & button[role="submit"],
+    > button:last-of-type {
+        filter: invert(0.85);
+        width: 100%;
+        padding: var(--padding, 8px) calc(var(--padding, 8px) * 2);
+        transition: text-decoration, max-width, filter 0.3s;
+        font-weight: bold;
+        font-size: var(--font-body);
+        /* max-width: 100%; */
+        position: relative;
+        left: 2px;
+        max-width: calc(100% - 4px);
+        margin: -5px auto 0;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-color: var(--primary-bg);
+        
+        &:hover,
+        &:focus {
+            filter: invert(0);
+            text-decoration-color: var(--color);
+        }
+    }
+}
+
+sealed-form,
+.sealed-form {
+    display: block;
+    
+    & :is(.placeholder-label, .multi-select).sealed {
+        background: var(--primary-bg);
+        border-radius: var(--border-radius);
+        
+        & label {
+            /* TODO: skewX(80deg) the bottom border and move the label to the end */
+            border-bottom: 2px dotted black;
+            border-bottom-style: dotted;
+        }
+
+        &:has(input[type="checkbox"]) {
+            border: unset;
+            
+            & input {
+                border: var(--border);
+
+                & [type="checkbox"] {
+                    margin-left: auto;
+                    content: 'Incomplete';
+    
+                    &:checked {
+                        background: red;
+                    }
+                }
+            }
+        }
+
+        &:has(textarea) {
+            background: unset;
+        }
+
+        &:not(.multi-select):has(input:not(:focus)) label,
+        &:has(textarea:not(:focus)) label,
+        &:is(.multi-select):has([role="combobox"] > input:not(:focus)) label {
+            left: 0;
+            top: 0;
+            transform: translate(var(--padd), var(--padd));
+            border-color: transparent;
+            border-bottom: 2px dotted black;
+        }
+
+        &:is(.multi-select) {
+            --sealed: 0px;
+            & [role="combobox"] {
+
+                &:focus-within input {
+                    margin-bottom: -2px;
+                }
+
+                & ul[role="listbox"] {
+                    height: var(--sealed);
+                    padding: var(--sealed);
+
+                    &:focus-within {
+                        height: auto;
+                        padding: var(--padding);
+                    }
+                }
+            }
+        } 
+    }
+    
+    & :is(.placeholder-label, .multi-select).unsealed {
+        & label {
+            border-color: black !important;
+            border-bottom-color: transparent !important;
+            left: var(--offset) !important;
+            top: calc(var(--offset) * -1) !important;
+            transform: translateY(-50%) !important;
+        }
+
+        &:not(.multi-select):has(input:not(:focus)) label,
+        &:has(textarea:not(:focus)) label,
+        &:is(.multi-select):has([role="combobox"] > input:not(:focus)) label {
+            border-color: black !important;
+            border-bottom-color: transparent !important;
+            left: var(--offset) !important;
+            top: calc(var(--offset) * -1) !important;
+            transform: translateY(-50%) !important;
+        }
+
+        &:is(.multi-select) {
+            --unsealed: auto;
+            & [role="combobox"]:focus-within,
+            & [role="combobox"]:has(ul[role="listbox"]:focus-within) {
+                border-bottom-width: 2px;
+
+                & ul[role="listbox"] {
+                    height: var(--unsealed);
+                    padding: var(--padding);
+                    
+                    &:focus-within {
+                        height: var(--unsealed);                                
+                    }
+                }
+            }
+        } 
+    }
+}
+
+@media (min-width: 500px) {
+
+}
+
+@media (min-width: 900px) {
+
+}
+
+@media (min-width: 1300px) {
+
+}
+
+@media (min-width: 1700px) {
+
+}
+
+@media (min-width: 2500px ) {
+    
+}

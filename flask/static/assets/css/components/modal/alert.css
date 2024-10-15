@@ -1,0 +1,17 @@
+#modal--alert {
+
+   & fieldset {
+      display: block;
+
+      & button {
+         display: block;
+         width: 100%;
+         font-size: 24px;
+         margin: 12px auto;
+
+         &:nth-of-type(1) {
+            margin-top: 24px;
+         }
+      }
+   }
+}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% import "components/forms/forms.html" as forms %}
+
+{# main #}
+{% block content %}
+<section>
+    {% set todos = list[:] %}
+    <form>
+        <ul>
+            {% for todo in todos %}
+                <li>
+                    <input type="checkbox">
+                    {{ todo.title }}
+                    <button type="button">
+                        Delete
+                    </button>
+                </li>
+            {% endfor %}
+        </ul>
+        <button disabled>Delete Selected</button>
+    </form>
+</section>
+{# pagination #}
+{% with (page, pagesize, lastpage) = paged %}
+    {% include "components/pagination.html" %}
+{% endwith %}
+{% endblock %}

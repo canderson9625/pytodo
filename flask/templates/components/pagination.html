@@ -1,0 +1,66 @@
+<form>
+    <fieldset>
+        <label for="pagesize">Pagesize</label>
+        <input type="tel" id="pagesize" name="pagesize" value="{{pagesize}}"/>
+        {# if page == 1 #}
+        {# page - 1 #}
+        <a 
+            href="{{ '' if page == 1 else url_for(request.endpoint, page=(page - 1), pagesize=pagesize, **request.view_args) }}" 
+            id="prev"
+            style="{{ 'cursor: not-allowed; opacity: 0.5; pointer-events: none' if page == 1 else 'pointer-events: auto' }}"
+            aria-disabled="{{page == 1}}"
+        >Previous Page</a>
+        {% if show_first_last_btn or lastpage > 2 %}
+            {# page = 1 #}
+            <a 
+                href="{{ '' if page == 1 else url_for(request.endpoint, page=(1), pagesize=pagesize, **request.view_args) }}" 
+                id="first"
+                style="{{ 'cursor: not-allowed; opacity: 0.5; pointer-events: none' if page == 1 else 'pointer-events: auto' }}"
+                aria-disabled="{{page == 1}}"
+            >First Page</a>
+        {% endif %}
+
+        {# page = i #}
+        {% if show_page_btns or lastpage > 7 %}
+            {% for i in range(lastpage) %}
+                {% if i > 0 and i < page %}
+                    <a 
+                        href="{{  url_for(request.endpoint, page=(i), pagesize=pagesize, **request.view_args) }}"
+                        style="{{ 'cursor: not-allowed; opacity: 0.5; pointer-events: none' if page == 1 else 'pointer-events: auto' }}"
+                        aria-disabled="{{page == 1}}"
+                    >{{ i }}</a>
+                {% endif %}
+            {% endfor %}
+            {# current is always disabled #}
+            <a href="" id="current" style="cursor: not-allowed; opacity: 0.5; pointer-events: none" aria-disabled="true" aria-label="Current Page: {{ page }}">{{page}}</a>
+            {% for i in range(lastpage) %}
+                {% set i = i + page %}
+                {% if i > page and i <= lastpage %}
+                    <a 
+                        href="{{  url_for(request.endpoint, page=(i), pagesize=pagesize, **request.view_args) }}"
+                        style="{{ 'cursor: not-allowed; opacity: 0.5; pointer-events: none' if page == lastpage else 'pointer-events: auto' }}"
+                        aria-disabled="{{page == lastpage}}"
+                    >{{ i }}</a>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        {# if page == lastpage #}
+        {# page = lastpage #}
+        {% if show_first_last_btn or lastpage > 2 %}
+        <a 
+            href="{{ '' if page == lastpage else url_for(request.endpoint, page=(lastpage), pagesize=pagesize, **request.view_args) }}" 
+            id="last"
+            style="{{ 'cursor: not-allowed; opacity: 0.5; pointer-events: none' if page == lastpage else 'pointer-events: auto' }}"
+            aria-disabled="{{page == lastpage}}"
+        >Last Page</a>
+        {% endif %}
+        {# page + 1 #}
+        <a 
+            href="{{ '' if page == lastpage else url_for(request.endpoint, page=(page + 1), pagesize=pagesize, **request.view_args) }}" 
+            id="next"
+            style="{{ 'cursor: not-allowed; opacity: 0.5; pointer-events: none' if page == lastpage else 'pointer-events: auto' }}"
+            aria-disabled="{{page == lastpage}}"
+        >Next Page</a> 
+    </fieldset>
+</form>
