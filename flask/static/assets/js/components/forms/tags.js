@@ -35,7 +35,6 @@ export default class TagsInteractivity {
     }
 
     init() {
-        this.updateMode = window.location.pathname.includes("update")
         this.tags = []
         // iterate over the list and synchronize status of tags
         this.html.tags.forEach((elem, idx) => {

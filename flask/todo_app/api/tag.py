@@ -1,5 +1,5 @@
 from todo_app.todo_db_connect import provides_conn_as_arg
-from todo_app.utils import a_list_dict_to_b_list_tuple, update_list_with_latest
+from todo_app.utils import a_list_dict_to_b_list_tuple
 
 # GET related functions
 @provides_conn_as_arg
@@ -14,14 +14,6 @@ def get_tags(conn):
 
 
 # POST related functions
-# @provides_conn_as_arg
-# def insert_todo(conn, data):
-#     """Insert the data into the db and return the ID """;
-#     with conn as cursor:
-#         cursor.execute("INSERT INTO todo (title, description) VALUES (%s, %s)", (data["title"], data["description"]))
-#         cursor.execute("SELECT id FROM todo ORDER BY id DESC LIMIT 1")
-#         return cursor.fetchall()[0]['id']
-    
 def create_tag(cursor, newlyCreated):
     newlyCreated = a_list_dict_to_b_list_tuple(newlyCreated)
     # statements
@@ -32,9 +24,11 @@ def create_tag(cursor, newlyCreated):
     return newlyCreated
 
 def create_tag_assoc(cursor, todo_id, createAssoc, newlyCreated):
-    createAssoc = update_list_with_latest(createAssoc, newlyCreated, "tag_id")
+    # convert into (todo_id, tag_id) tuple
     temp_list = []
     for item in createAssoc:
+        temp_list.append((todo_id, item["tag_id"]))
+    for item in newlyCreated:
         temp_list.append((todo_id, item["tag_id"]))
     createAssoc = temp_list
     # statements
@@ -49,11 +43,11 @@ def insert_tag(conn, todo_id, data):
     with conn as cursor:
         newlyCreated = data["tags"]["created"]
         if newlyCreated:
-            create_tag(cursor, newlyCreated)
-        
+            newlyCreated = create_tag(cursor, newlyCreated)
+            
         createAssoc = data["tags"]["selected"]
-        if createAssoc:
-            create_tag_assoc(cursor, todo_id, createAssoc, newlyCreated)
+        if createAssoc or newlyCreated:
+            createAssoc = create_tag_assoc(cursor, todo_id, createAssoc, newlyCreated)
         
         return (newlyCreated, createAssoc)
 
@@ -71,16 +65,9 @@ def update_tags(cursor, updateTags):
 
 @provides_conn_as_arg
 def update_tag_by_todo_id(conn, data):
-    with conn as cursor:
-        newlyCreated = data["tags"]["created"]
-        if newlyCreated:
-            newlyCreated = create_tag(cursor, newlyCreated)
-        
-        createAssoc = data["tags"]["selected"]
-        if createAssoc:
-            # create associations for newly selected and newly created tags
-            createAssoc = create_tag_assoc(cursor, data["todo_id"], createAssoc, newlyCreated)
+    (newlyCreated, createAssoc) = insert_tag(data["todo_id"], data)
 
+    with conn as cursor:
         updateTags = data["tags"]["updated"]
         if updateTags:
             # update the title and/or description

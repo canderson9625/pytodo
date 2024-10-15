@@ -6,8 +6,10 @@ from todo_app.utils import dataExists
 from math import ceil
 import json
 
-app = Flask(__name__)
+indexRouteString = '/';
+app = Flask(__name__, static_url_path=indexRouteString + '/static')
 
+# renders the passed template on GET otherwise applies the passed callback
 class req_method_handler:
     def __init__(self, templateCallback):
         self.render_template = templateCallback
@@ -27,29 +29,28 @@ def get_paged():
     lastpage = int(lastpage) if lastpage else 0
     return (page, pagesize, lastpage)
 
-
-@app.route('/', methods=["GET"])
+@app.route(indexRouteString, methods=["GET"])
+@app.route('/' + indexRouteString[1:-1], methods=["GET"])
 def index_route():
-   #  page = request.args.get("page")
-   tags = get_tags()
+    page = request.args.get("page")
+    tags = get_tags()
 
-   #  if page == "-1":
-   (page, pagesize, lastpage) = (0, 0, 0);
-   title = f"Todos | All"
-   list = get_todos(None)
+    if page == None:
+        (page, pagesize, lastpage) = (0, 0, 0);
+        title = f"Todos | All"
+        list = get_todos(None)
 
-   list = [] if list == 0 else list
-   #  else:
-   #      (page, pagesize, lastpage) = get_paged()
-   #      title = f"Todos | Page {page}"
-   #      list = get_todos(pagesize, pagesize * (page - 1))
+        list = [] if list == 0 else list
+    else:
+        (page, pagesize, lastpage) = get_paged()
+        title = f"Todos | Page {page}"
+        list = get_todos(pagesize, pagesize * (page - 1))
 
-   # print(list)
-
-   return render_template("index.html", title=title, list=list, tags=tags, paged=(page, pagesize, lastpage), json=json)
+    return render_template("index.html", title=title, list=list, tags=tags, paged=(page, pagesize, lastpage), json=json)
 
 
-@app.route('/<operation>/', methods=["GET", "POST", "DELETE"])
+@app.route(indexRouteString + '<operation>/', methods=["GET", "POST", "DELETE"])
+@app.route(indexRouteString + '<operation>', methods=["GET", "POST", "DELETE"])
 def route_handler(operation):
     route = operation.lower()
     tags = get_tags()
@@ -58,7 +59,7 @@ def route_handler(operation):
     todos = get_todos(pagesize, pagesize * (page - 1))
     handleRoute = req_method_handler(lambda : render_template(f"views/{route}.html", title=title, list=todos, tags=tags, dir=dir, json=json, paged=(page, pagesize, lastpage)))
     match route:
-        case "create": # GET, POST
+        case "create": # GET uses render_template, POST uses lambda
             return handleRoute.render(lambda : create_todo(request))
         case "read": # GET
             return get_todos()
@@ -70,7 +71,8 @@ def route_handler(operation):
             return redirect(url_for("index_route"))
 
 
-@app.route('/<operation>/<id>/', methods=["GET", "PUT", "DELETE"])
+@app.route(indexRouteString + '<operation>/<id>/', methods=["GET", "PUT", "DELETE"])
+@app.route(indexRouteString + '<operation>/<id>', methods=["GET", "PUT", "DELETE"])
 def single_route_handler(operation, id):
     route = operation.lower()
     todo = get_todo(id)
@@ -78,8 +80,6 @@ def single_route_handler(operation, id):
     if todo:
         handleRoute = req_method_handler(lambda : render_template(f"views/{route}_single.html", title=f"{route} single", todo=todo, tags=tags, dir=dir, json=json))
         match route:
-            # case "create": # POST
-            #     return handleRoute.render(lambda : create_todo(request))
             case "read": # GET
                 return todo
             case "update": # GET, PUT
@@ -93,7 +93,7 @@ def single_route_handler(operation, id):
 
 
 
-@app.route('/dev/<misc>', methods=["GET"])
+@app.route(indexRouteString + 'dev/<misc>', methods=["GET"])
 def dev_route(misc):
     tags = get_tags()
     title = f"Todos | Dev: {misc}"

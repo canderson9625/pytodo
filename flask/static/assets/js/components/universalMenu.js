@@ -324,7 +324,7 @@ export default function universalMenu() {
         const { rect, firstX, firstY, relativeX, relativeY, origin: { x: originX, y: originY, centerX, centerY }, history: { entries } } = state;
         const threshold = rect.hypotenuse / 2;
         if (Math.abs(x - firstX) > threshold || Math.abs(y - firstY) > threshold) {
-            UM.style.transition = `transform 200ms`;
+            UM.style.transition = `transform 300ms`;
             return coordsInBounds(x, y);
         } else {
             // strategy below threshold
@@ -462,17 +462,17 @@ export default function universalMenu() {
             // state.timeoutId = setTimeout(() => {
             //     click__animIdle({state, x, y});
             // }, 100);
-        }, 100)
+        }, 50)
     }
 
     // draggable menu
     UM.addEventListener("mousedown", click)
-    UM.addEventListener("touchstart", click, { passive: true })
+    UM.addEventListener("touchstart", click, { passive: false })
     document.addEventListener("mouseup", release)
     document.addEventListener("touchend", release)
     document.addEventListener("touchcancel", release)
     document.addEventListener("mousemove", drag)
-    document.addEventListener("touchmove", drag)
+    document.addEventListener("touchmove", drag, { passive: true })
     // document.addEventListener("keydown", () => {
     //     console.log("down", document.activeElement)
     // })

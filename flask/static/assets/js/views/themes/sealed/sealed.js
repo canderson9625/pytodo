@@ -9,8 +9,11 @@ import {
   delete_todo,
 } from "./functions/todos.js";
 
+const API = '/';
+const ORIGIN = window.location.origin + API;
+
 window.fetchMain = async () => {
-  return fetch(`${window.location.origin}/?page=-1`).then((res) => {
+  return fetch(`${ORIGIN}`).then((res) => {
     return res.text();
   });
 };
@@ -24,6 +27,8 @@ const sealedProps = {
  * The entry point to the theme
  */
 export default class Sealed extends abstractTheme {
+  ORIGIN = ORIGIN;
+
   constructor(props = sealedProps) {
     super({ ...sealedProps, ...props });
 
@@ -179,11 +184,13 @@ export default class Sealed extends abstractTheme {
       if (formdata["title"]?.trim?.() === "") {
         alert("Please Enter A Title.");
       }
+      formdata["tags"] = FORM.tagsInteractivity.sortedTags;
+
       return FORM.submitForm(formdata);
     };
 
     FORM.submitForm = (formdata) => {
-      fetch(window.location.origin + "/create", {
+      fetch(ORIGIN + "/create", {
         method: "post",
         body: JSON.stringify(formdata),
       })
@@ -217,11 +224,13 @@ export default class Sealed extends abstractTheme {
             h2.append(date);
           } else {
             h2.innerText = formdata.title;
+            FORM.FORM.querySelector('input').value = "";
           }
           newElem.append(h2);
 
           if (formdata?.tags) {
-            const formdataTags = formdata.tags.split(",");
+            // const formdataTags = formdata.tags.split(",");
+            const formdataTags = [...formdata.tags.selected.map(t => t.title), ...formdata.tags.created.map(t => t.title)];
             const tags = document.createElement("p");
             tags.classList.add("tags");
             for (let i = 0; i < formdataTags.length; i++) {
@@ -230,6 +239,9 @@ export default class Sealed extends abstractTheme {
               tags.append(tag);
             }
             newElem.append(tags);
+
+            // TODO: reset tags
+            FORM.tagsInteractivity.tags
           }
 
           if (formdata?.description) {

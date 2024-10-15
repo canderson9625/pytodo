@@ -1,3 +1,4 @@
+# searches a list of objects with property todo_id for the search_id
 def find_dict_by_id_loop(data_list, search_id):
     for item in data_list:
         # print(item['todo_id'], search_id, item['todo_id'] == search_id)
@@ -5,6 +6,7 @@ def find_dict_by_id_loop(data_list, search_id):
             return item
     return None
 
+# turn a list of dicts into a list of tuples
 def a_list_dict_to_b_list_tuple(data_list, properties=["title", "description"]):
     return_list = []
     for dict in data_list:
@@ -17,6 +19,7 @@ def a_list_dict_to_b_list_tuple(data_list, properties=["title", "description"]):
         return_list.append(tuple(becomes_tuple))
     return return_list
 
+# matches on title to update the property 
 def update_list_with_latest(data_list, new_list, property):
     if not dataExists(data_list):
         return new_list

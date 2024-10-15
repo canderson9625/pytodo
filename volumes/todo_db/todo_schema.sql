@@ -28,17 +28,21 @@ CREATE DATABASE todo_app;
 -- ASSOCIATION TABLES
     CREATE TABLE IF NOT EXISTS assoc_todo_tag (
         id SERIAL PRIMARY KEY,
-        todo_id INTEGER NOT NULL,
-        tag_id INTEGER NOT NULL
+        todo_id INTEGER NOT NULL REFERENCES todo(id)
+                                    ON DELETE CASCADE,
+        tag_id INTEGER NOT NULL REFERENCES tag(id)
+                                    ON DELETE CASCADE,
     );
     CREATE TABLE IF NOT EXISTS assoc_todo_due_date (
         id SERIAL PRIMARY KEY,
-        todo_id INTEGER NOT NULL,
-        due_date_id INTEGER NOT NULL
+        todo_id INTEGER NOT NULL REFERENCES todo(id)
+                                    ON DELETE CASCADE,
+        due_date_id INTEGER NOT NULL REFERENCES due_date(id)
+                                    ON DELETE CASCADE
     );
 -- END: ASSOCIATION TABLES
 
-
+-- Sample Procedure 
 -- CREATE OR REPLACE PROCEDURE procedure_name(parameter_list)
 -- LANGUAGE plpgsql
 -- AS $$

@@ -23,20 +23,24 @@ def parse_data_as_arg(f: Callable[..., Any]) -> Callable[..., Any]:
 @parse_data_as_arg
 def create_todo(data, req):
     """PUT API route handler"""
-    print(data);
     result = {}
     # create todo
     if dataExists(data["title"]):
         result["todo_id"] = insert_todo(data)
+        data["todo_id"] = result["todo_id"]
     
     # create due_date
     # TODO: partition due_dates
     if dataExists(data["complete_by"]) and result["todo_id"] > -1:
         result["due_date_tuple"] = insert_due_date(result["todo_id"], data)
-    
-    # create new tags, and create tag assocation records
-    if dataExists(data["tags"]) and result["todo_id"] > -1:
-        result["tags_tuple"] = insert_tag(result["todo_id"], data)
+
+    # create new tags, and create & update tag association records
+    try:
+        if dataExists(data["tags"]):
+            result["tags"] = update_tag_by_todo_id(data)
+    except:
+        pass
+
     
     return {'message': 'Success', "result": result}
 
@@ -45,7 +49,6 @@ def create_todo(data, req):
 @parse_data_as_arg
 def update_todo(data, req):
     """PUT API route handler"""
-    # print(dir(req), req.path);
     result = {}
     data["status"] = data.get("status", None);
     data["todo_id"] = data.get("todo_id", req.path.split("/")[2])
@@ -71,11 +74,10 @@ def update_todo(data, req):
     return {'message': 'Success', 'result': result}
 
 
-# TODO DELETE API route handler
+# DELETE API route handler
 @parse_data_as_arg
 def delete_todo(data, req):
     """DELETE API route handler"""
-    print(data, req)
     result = {}
     # delete todo
     try:

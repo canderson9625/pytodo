@@ -25,7 +25,7 @@ export function completeTodo() {
     formdata["title"] = todo.title;
     formdata["description"] = todo.description;
 
-    fetch(window.location.origin + `/update/${todo.todo_id}`, {
+    fetch(Sealed.ORIGIN + `/update/${todo.todo_id}`, {
       method: "put",
       body: JSON.stringify(formdata),
     })
@@ -91,7 +91,7 @@ export function todo_update_cb(elem) {
       `section[data-todo_id="${todo.todo_id}"]`
     );
     if (todoFound === null) {
-      fetch(`${window.location.origin}/update/${todo.todo_id}`)
+      fetch(`${Sealed.ORIGIN}/update/${todo.todo_id}`)
         .then((res) => {
           return res.text();
         })
@@ -116,7 +116,7 @@ export function todo_update_cb(elem) {
             FORM.submitForm(formdata);
           };
           FORM.submitForm = (formdata) => {
-            fetch(`${window.location.origin}/update/${todo.todo_id}`, {
+            fetch(`${Sealed.ORIGIN}/update/${todo.todo_id}`, {
               method: "put",
               body: JSON.stringify(formdata),
             })
@@ -242,7 +242,7 @@ const deleteTodo = ({ evt, todo, formdata, elem }) => {
       }
     })
       .then(() => {
-        fetch(window.location.origin + `/delete/${todo.todo_id}`, {
+        fetch(Sealed.ORIGIN + `/delete/${todo.todo_id}`, {
           method: "delete",
           body: JSON.stringify(formdata),
         })
