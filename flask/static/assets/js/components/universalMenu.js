@@ -412,8 +412,10 @@ export default function universalMenu() {
             state.timeoutId = null;
         }
 
-        const x = evt.clientX / window.innerWidth;
-        const y = evt.clientY / window.innerHeight;
+        const { x: clientX, y: clientY } = extractXYCoords(evt);
+
+        const x = clientX / window.innerWidth;
+        const y = clientY / window.innerHeight;
 
         const minX = state.origin.offset.x / window.innerWidth;
         const maxX = (window.innerWidth - state.origin.offset.x) / window.innerWidth;
@@ -444,8 +446,6 @@ export default function universalMenu() {
         // }, 1000)
 
         throttledDrag(() => {
-            const { x: clientX, y: clientY } = extractXYCoords(evt);
-
             if (UM.ariaExpanded === "true") {
                 placeMenuInQuadrant(clientX, clientY)
             }

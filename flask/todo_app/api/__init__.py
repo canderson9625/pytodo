@@ -51,7 +51,7 @@ def update_todo(data, req):
     """PUT API route handler"""
     result = {}
     data["status"] = data.get("status", None);
-    data["todo_id"] = data.get("todo_id", req.path.split("/")[2])
+    data["todo_id"] = data.get("todo_id", req.path.split("/")[-1])
     
     # update todo
     if dataExists(data["title"]):

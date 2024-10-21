@@ -75,11 +75,13 @@ def insert_todo(conn, data):
 # PUT related functions
 @provides_conn_as_arg
 def update_todo_by_id(conn, data):
-    print(data)
-    updates = [f"title='{data["title"]}'" if data["title"] else '', f"description='{data["description"]}'" if data["description"] else '', f"complete='{data["status"]}'" if data["status"] != None else '']
+    title = data["title"].replace("'", "''");
+    desc = data["description"].replace("'", "''");
+    updates = [f"title='{title}'" if data["title"] else '', f"description='{desc}'" if data["description"] else '', f"complete='{data["status"]}'" if data["status"] != None else '']
+    
     updates = list(filter(lambda x: x != '', updates))
     updates = updates[0] if len(updates) == 1 else ','.join(updates) if len(updates) > 0 else ''
-    print(updates)
+
     if updates == '':
         return False
     
@@ -93,4 +95,4 @@ def update_todo_by_id(conn, data):
 def delete_todo_by_id(conn, data):
     with conn as cursor:
         cursor.execute(f"DELETE FROM todo WHERE id={data["todo_id"]}")
-        return 
+        return
