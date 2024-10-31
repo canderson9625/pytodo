@@ -268,3 +268,34 @@ const deleteTodo = ({ evt, todo, formdata, elem }) => {
       });
   }
 };
+
+const descriptionResize = () => {
+  const rect = description.getBoundingClientRect();
+  
+  // const bottom = rect.left + rect.width / 2;
+  // const right = rect.top + rect.height / 2;
+
+  const yVal = {
+    start: null,
+    curr: null
+  }
+
+  description.parentElement.addEventListener("touchstart", (evt) => {
+    // const xCurr = evt.targetTouches[0].clientX;
+    const yStart = evt.targetTouches[0].clientY;
+    yVal.start = yStart;
+  })
+
+  description.parentElement.addEventListener("touchmove", (evt) => {
+    const yCurr = evt.targetTouches[0].clientY;
+    yVal.curr = yCurr - yVal.start;
+    
+    description.style.height = rect.height + yVal.curr + "px";
+  })
+
+  description.parentElement.addEventListener("touchstop", () => {
+    yVal.start = null;
+    yVal.curr = null;
+  })
+} 
+descriptionResize()
