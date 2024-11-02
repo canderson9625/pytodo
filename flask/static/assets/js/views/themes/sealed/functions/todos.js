@@ -105,6 +105,8 @@ export function todo_update_cb(elem) {
 
           dialog.appendChild(content);
 
+          descriptionResize(content.querySelector('textarea[name="description"]'));
+
           const FORM = new SealedForm({ form: content.querySelector("form") });
 
           FORM.validateForm = () => {
@@ -132,8 +134,8 @@ export function todo_update_cb(elem) {
                   const content = doc.body.querySelector("main > *");
 
                   const result = [...content.children].filter((t) => {
-                    const todo = JSON.parse(t.dataset.todo ?? "");
-                    return todo.title.includes(formdata.title);
+                    const todoTitle = JSON.parse(t.dataset.todo ?? "").title.toLowerCase();
+                    return todoTitle.includes(formdata.title.toLowerCase());
                   })[0];
 
                   const section = document.getElementById("main").children[0];
@@ -269,7 +271,7 @@ const deleteTodo = ({ evt, todo, formdata, elem }) => {
   }
 };
 
-const descriptionResize = () => {
+const descriptionResize = (description) => {
   const rect = description.getBoundingClientRect();
   
   // const bottom = rect.left + rect.width / 2;
@@ -284,18 +286,18 @@ const descriptionResize = () => {
     // const xCurr = evt.targetTouches[0].clientX;
     const yStart = evt.targetTouches[0].clientY;
     yVal.start = yStart;
-  })
+  }, {passive: false})
 
   description.parentElement.addEventListener("touchmove", (evt) => {
     const yCurr = evt.targetTouches[0].clientY;
     yVal.curr = yCurr - yVal.start;
     
     description.style.height = rect.height + yVal.curr + "px";
-  })
+  }, {passive: true})
 
-  description.parentElement.addEventListener("touchstop", () => {
+  description.addEventListener("touchstop", () => {
     yVal.start = null;
     yVal.curr = null;
-  })
+  }, {passive: true})
 } 
-descriptionResize()
+document.querySelectorAll('textarea[name="description"]').forEach(elem => descriptionResize(elem))
