@@ -60,31 +60,37 @@ export default class datepickerInteractivity {
             const expandWeekday = () => {
                 this.input.nested.parentElement.querySelector('button').innerText = 'Back'
                 this.input.nested.inert = false
+                this.nested = true
             }
-            
-            if (evt.type === "focusout" ) {
+
+            setTimeout(() => {
                 // document.activeElement on focusOut is body
-                return setTimeout(() => {
-                    return this.input.nested.parentElement.contains(document.activeElement) === false && this.resetNested()
-                }, 50);
-            } else if (evt.type === "mouseout" && this.input.nested.inert === true) {
-                // don't open if just moved over briefly
-                return this.resetNested();
-            } else if (evt.type === "focus" && this.nested !== false) {
-                // focus weekday while no longer nested
-                return this.resetNested();
-            } else if (evt.type === "click") {
-                // this.input.nested.parentElement.querySelector('> button').innerText = 'Back';
-                return Boolean(this.nested)
-                    ? this.resetNested()
-                    : expandWeekday()
+                // setTimeout gives us the actual activeElement
+                if (this.nested !== false) {
+                    if (evt.type === "focusout") {
+                        if (this.input.combobox.contains(document.activeElement) === false && this.input.nested.parentElement.contains(document.activeElement) === false) {
+                            this.resetNested()
+                        }
+                        return 
+                    } 
+                }
 
-            } else if (evt.type !== "mouseout" && evt.type !== "focusout") {
-                this.nested = setTimeout(() => {
-                    expandWeekday()
-                }, 1000);
-            }
-
+                if (evt.type === "click") {
+                    if (this.input.nested.parentElement.contains(document.activeElement)) {
+                        console.log(this.nested)
+                        return Boolean(this.nested)
+                            ? this.resetNested()
+                            : expandWeekday()
+                    }
+                } else if (evt.type !== "mouseout" && evt.type !== "focusout") {
+                    const timeoutId = setTimeout(() => {
+                        if (this.input.combobox.contains(document.activeElement) && this.input.nested.parentElement.contains(document.activeElement)) {
+                            this.nested = timeoutId
+                            expandWeekday()
+                        }
+                    }, 1000);
+                }
+            }, 50);
         };
         this.input.listbox.querySelector('.weekday').addEventListener("focus", weekday)
         this.input.listbox.querySelector('.weekday').addEventListener("focusout", weekday)
@@ -194,6 +200,8 @@ export default class datepickerInteractivity {
                     } else {
                         this.next.week(idx)
                     }
+
+                    this.resetNested();
                 })
             }
         })
