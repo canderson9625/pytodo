@@ -63,6 +63,10 @@ export class ModalInteractivity {
     button.ariaHidden = true;
     document.querySelector("main").inert = false;
 
+    modal.querySelectorAll('dialog[aria-expanded="true"]').forEach(elem => {
+      elem.ariaExpanded = "false";
+    })
+
     expression && expression();
   }
 }

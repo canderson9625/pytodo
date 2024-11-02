@@ -570,6 +570,7 @@ function dialogs() {
         state.open = false
         views.forEach(({elem}) => {
             elem.ariaHidden = true
+            elem.ariaExpanded = false;
             elem.inert = true;
         })
         render()
