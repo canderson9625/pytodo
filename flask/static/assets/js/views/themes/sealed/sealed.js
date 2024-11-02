@@ -140,7 +140,7 @@ export default class Sealed extends abstractTheme {
 
             // filter by name
             if (formdata?.title && formdata.title !== "") {
-              passes = todo.title.includes(formdata.title);
+              passes = todo.title.toLowerCase().includes(formdata.title.toLowerCase());
             }
 
             // filter by status
