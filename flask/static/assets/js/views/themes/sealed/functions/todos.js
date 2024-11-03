@@ -272,10 +272,10 @@ const deleteTodo = ({ evt, todo, formdata, elem }) => {
 };
 
 const descriptionResize = (description) => {
-  const rect = description.getBoundingClientRect();
-  
-  // const bottom = rect.left + rect.width / 2;
-  // const right = rect.top + rect.height / 2;
+
+  const state = {
+    rect: null,
+  }
 
   const yVal = {
     start: null,
@@ -283,21 +283,44 @@ const descriptionResize = (description) => {
   }
 
   description.parentElement.addEventListener("touchstart", (evt) => {
-    // const xCurr = evt.targetTouches[0].clientX;
+    let { rect } = state;
+    if ( rect === null ) {
+      rect = description.getBoundingClientRect();
+      state.rect = rect;
+    }
+  
+    const bound = 50;
+    const xMin = rect.left + rect.width - bound;
+    const xMax = rect.left + rect.width + bound;
+    const yMin = rect.top + rect.height - bound;
+    const yMax = rect.top + rect.height + bound;
+
+    const xCurr = evt.targetTouches[0].clientX;
     const yStart = evt.targetTouches[0].clientY;
-    yVal.start = yStart;
+
+    if (
+      xCurr > xMin && xCurr < xMax
+      && yStart > yMin && yStart < yMax
+    ) {
+      yVal.start = yStart;
+    }
   }, {passive: false})
 
   description.parentElement.addEventListener("touchmove", (evt) => {
-    const yCurr = evt.targetTouches[0].clientY;
-    yVal.curr = yCurr - yVal.start;
-    
-    description.style.height = rect.height + yVal.curr + "px";
+    if (yVal.start) {
+      const { rect } = state;
+
+      const yCurr = evt.targetTouches[0].clientY;
+      yVal.curr = yCurr - yVal.start;
+      
+      description.style.height = rect.height + yVal.curr + "px";
+    }
   }, {passive: true})
 
-  description.addEventListener("touchstop", () => {
+  document.addEventListener("touchend", () => {
     yVal.start = null;
     yVal.curr = null;
+    state.rect = null;
   }, {passive: true})
 } 
 document.querySelectorAll('textarea[name="description"]').forEach(elem => descriptionResize(elem))
