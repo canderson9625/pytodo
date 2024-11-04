@@ -61,6 +61,8 @@ def update_todo(data, req):
     try:
         if dataExists(data["complete_by"]):
             result["due_date"] = update_due_date_by_todo_id(data)
+        if result["due_date"] == None:
+            result["due_date"] = insert_due_date(data["todo_id"], data)
     except:
         pass
     

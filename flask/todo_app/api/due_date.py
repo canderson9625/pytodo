@@ -18,20 +18,21 @@ def insert_due_date(conn, todo_id, data):
 @provides_conn_as_arg
 def update_due_date_by_todo_id(conn, data):
     with conn as cursor:
-        cursor.execute(f"""
+        cursor.execute("""
                        UPDATE due_date d 
-                       SET complete_by='{data["complete_by"]}' 
+                       SET complete_by=%s
                        WHERE d.id = (
                         SELECT due_date_id
                         FROM assoc_todo_due_date tdd
-                        WHERE tdd.todo_id={data["todo_id"]}
-                       );""")
-        cursor.execute(f"""
+                        WHERE tdd.todo_id=%s
+                       );""", (data["complete_by"], data["todo_id"]))
+        cursor.execute("""
                        SELECT * 
-                       FROM due_date 
-                       WHERE id=(
+                       FROM due_date d
+                       WHERE d.id = (
                         SELECT due_date_id
                         FROM assoc_todo_due_date tdd
-                        WHERE tdd.todo_id={data["todo_id"]}
-                       );""")
-        return cursor.fetchall()[0]
+                        WHERE tdd.todo_id=%s
+                       );""", (data["todo_id"], ))
+        retVal = cursor.fetchall()[0]
+        return retVal
