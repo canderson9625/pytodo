@@ -7,8 +7,8 @@ def get_tags(conn):
     with conn as cursor:
         cursor.execute("""
                         SELECT t.id AS tag_id, t.title AS title, t.description AS description
-                        FROM tag as t
-                        LIMIT 10;
+                        FROM tag as t;
+                        -- LIMIT 10;
                         """)
         return cursor.fetchall()
 

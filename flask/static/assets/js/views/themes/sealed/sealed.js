@@ -9,7 +9,7 @@ import {
   delete_todo,
 } from "./functions/todos.js";
 
-const API = '/';
+const API = '';
 const ORIGIN = window.location.origin + API;
 
 window.fetchMain = async () => {

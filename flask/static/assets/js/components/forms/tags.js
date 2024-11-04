@@ -229,7 +229,7 @@ export default class TagsInteractivity {
         const removeSelectedProperty = (x) => x.map((x) => ({...x, selected: undefined}))
         const tags = this.tags
         const selectedTags = tags.filter(x => Boolean(x?.default) === false && x.selected)
-        const updatedTags = selectedTags.filter(x => x.updated)
+        const updatedTags = tags.filter(x => x.updated)
         const removedTags = tags.filter(x => Boolean(x?.default) && x.selected === false)
         
         return {
