@@ -3,10 +3,11 @@ import SealedForm from "./components/forms/form.js";
 import { ModalInteractivity } from "../../../components/modal.js";
 import universalMenu from "../../../components/universalMenu.js";
 import {
-  todo_select,
-  completeTodo,
+  get_todos,
+  complete_todo,
   todo_update_cb,
   delete_todo,
+  description_resize
 } from "./functions/todos.js";
 
 const API = '';
@@ -28,6 +29,9 @@ const sealedProps = {
  */
 export default class Sealed extends abstractTheme {
   ORIGIN = ORIGIN;
+  PERMISSIONS = ["viewer", "basic", "owner"];
+
+  permission = "";
 
   constructor(props = sealedProps) {
     super({ ...sealedProps, ...props });
@@ -78,6 +82,7 @@ export default class Sealed extends abstractTheme {
 
     // branding functions
     addColorToTags();
+    document.querySelectorAll('textarea[name="description"]').forEach(elem => description_resize(elem))
 
     // rename to match branding
     this.rename();
@@ -95,23 +100,139 @@ export default class Sealed extends abstractTheme {
     formatDBTimestamp();
   }
 
-  todo() {
-    // select a todo to update
-    todo_select();
-    completeTodo();
-    delete_todo();
+  authorization() {
+    const permission_guard = (operation) => new Promise((resolve, reject) => {
+      const todos = get_todos();
+      todos.forEach((elem) => {
+        elem.removeEventListener("click", click_login)
+      });
+      switch(this.permission) {
+        case "{super}":
+          resolve();
+          break;
+        case this.PERMISSIONS[0]:
+          ['read'].includes(operation) && resolve();
+          reject(`${operation} permission denied`);
+          break;
+        case this.PERMISSIONS[1]:
+          ['create', 'read', 'update'].includes(operation) && resolve();
+          reject(`${operation} permission denied`);
+          break;
+        case this.PERMISSIONS[2]:
+          ['create', 'read', 'update', 'delete'].includes(operation) && resolve();
+          break;
+        case "":
+          todos.forEach((elem) => {
+            elem.addEventListener("click", click_login)
+          });
+        default:
+          reject(`${operation} permission denied`);
+          break;
+      }
+    })
+
+    const operations = {
+      // Todo Interactivity
+      // create() {
+      //   permission_guard("create")
+      //     .then(() => {
+      //       console.log("create permission denied")
+      //     })
+      //     .catch((err) => {
+      //       console.log(err)
+      //     })
+      // },
+      async read() {
+        permission_guard("read")
+          .then(() => {
+            
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+      },
+      async update() {
+        permission_guard("update")
+          .then(() => {
+            get_todos().forEach((elem) => {
+              todo_update_cb({elem, init: true});
+              complete_todo({elem: elem.querySelector('.complete-btn'), init: true});
+            });
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+      },
+      async delete() {
+        permission_guard("delete")
+          .then(() => {
+            get_todos().forEach((elem) => {
+              delete_todo({elem, init: true})
+            });
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+      }
+    }
+
+    for ( const operation in operations ) {
+      operations[operation].apply(this)
+    }
+
+    // doesn't prevent user from completing actions on todos they own
+    // doesn't perform unless logged in
+    // switch(this.permission) {
+    //   case this.PERMISSIONS[0]:
+    //     return {
+    //       create: false,
+    //       read: operations.read,
+    //       update: false,
+    //       delete: false,
+    //     }
+    //   case this.PERMISSIONS[1]:
+    //     return {
+    //       create: operations.create,
+    //       read: operations.read,
+    //       update: operations.update,
+    //       delete: false,
+    //     }
+    //   case this.PERMISSIONS[2]:
+    //     return {
+    //       create: operations.create,
+    //       read: operations.read,
+    //       update: operations.update,
+    //       delete: operations.delete,
+    //     }
+    //   default:
+    //     return {
+    //       create: operations.login,
+    //       read: operations.read,
+    //       update: operations.login,
+    //       delete: operations.login,
+    //     }
+    // }
   }
 
   interactive() {
     // define universalMenu
     this.content.nav = universalMenu();
 
-    //  todo interactivity
-    this.todo();
+    // define todo interactivity
+    this.authorization()
 
     // define theme functionality
-    this.#filter();
-    this.#create();
+    new Promise(() => {
+      this.#filter();
+      this.#create();
+      this.#login();
+    })
+    
+
+    // Push Notifications
+    // Notification.requestPermission().then((result) => {
+    //   new Notification("To do list", { body: "blah", icon: `${ORIGIN}/favicon.ico` });
+    // });
   }
 
   #filter() {
@@ -120,7 +241,7 @@ export default class Sealed extends abstractTheme {
         return form.FORM?.parentElement?.id === "modal--search";
       }) ?? this.content.forms.FORM;
 
-    FORM.validateForm = (any) => {
+    FORM.validateForm = ({evt: any}) => {
       const formdata = Object.fromEntries(new FormData(any.target).entries());
       return FORM.submitForm(formdata);
     };
@@ -148,11 +269,21 @@ export default class Sealed extends abstractTheme {
               formdata?.completion_status !== undefined &&
               formdata?.completion_status !== null
             ) {
-              passes = todo.status === true;
+              passes = todo.status === formdata?.completion_status;
             }
 
             // TODO: filter by date
-            // TODO: filter by tags
+
+            // filter by tags
+            if (formdata?.tags) {
+              passes = false;
+              t.querySelectorAll('.tags span').forEach((tag, index) => {
+                // console.log(formdata.tags, todo.title, tag.innerText);
+                if (index === 0 || index > 0 && passes === false) {
+                  passes = formdata.tags.includes(tag.innerText);
+                }
+              })
+            }
 
             return passes;
           });
@@ -179,7 +310,7 @@ export default class Sealed extends abstractTheme {
         return form.FORM?.parentElement?.id === "modal--create";
       }) ?? this.content.forms.FORM;
 
-    FORM.validateForm = (any) => {
+    FORM.validateForm = ({evt: any}) => {
       const formdata = Object.fromEntries(new FormData(any.target).entries());
       if (formdata["title"]?.trim?.() === "") {
         alert("Please Enter A Title.");
@@ -264,6 +395,144 @@ export default class Sealed extends abstractTheme {
         });
     };
   }
+
+  #login() {
+    const FORM =
+      this.content.forms?.find?.((form) => {
+        return form.FORM?.parentElement?.id === "modal--login";
+      }) ?? this.content.forms.FORM;
+
+    const login = (formdata) => {
+      fetch(ORIGIN, {
+        headers: {
+          'Authorization': 'Basic ' + formdata
+        }
+      })
+        .then((res) => {
+          return res.headers.entries();
+        })
+        .then((headers) => {
+
+          for ( const [key, val] of headers ) {
+            if (key.includes("authenticated") && val == false) {
+              return FORM.statusMessage("Invalid Login.");
+            }
+
+            if (key.includes("token")) {
+              this.token = parseJwt(val);
+              this.permission = this.token.permission;
+              FORM.statusMessage("Welcome " + this.token.name, "Success");
+              localStorage.setItem("token", val);
+              this.authorization();
+            }
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          if (String(err).includes("SyntaxError")) {
+            return FORM.statusMessage("Invalid Login.");
+          }
+          // TODO: network error
+          FORM.statusMessage("Unknown Error Caught.", "warning");
+        });
+    };
+
+    if (localStorage.getItem("mobile")) {
+      FORM.FORM.querySelector("input[name=mobile]").value = localStorage.getItem("mobile");
+    }
+
+    if (localStorage.getItem("token")) {
+      const token = localStorage.getItem("token");
+      this.token = parseJwt(token);
+      const expiration = this.token.exp * 1000;
+      const now = Date.now()
+      
+      if (expiration > now) {
+        fetch(ORIGIN, {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        }).then((res) => {
+          return res.headers.entries();
+        }).then((headers) => {
+          for ( const [key, val] of headers ) {
+            if (key.includes("authenticated") && val == false) {
+              return FORM.statusMessage("Invalid Login.");
+            }
+
+            if (key.includes("token")) {
+              this.token = parseJwt(val);
+              this.permission = this.token.permission;
+              FORM.statusMessage("Welcome " + this.token.name, "Success");
+              localStorage.setItem("token", val);
+              this.authorization();
+            }
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          if (String(err).includes("SyntaxError")) {
+            return FORM.statusMessage("Invalid Login.");
+          }
+          // TODO: network error
+          FORM.statusMessage("Unknown Error Caught.", "warning");
+        });
+      } else {
+        console.log("expired");
+      }
+    }
+
+    // stop input from allowing non digit characters
+    FORM.FORM.querySelector("input[name=mobile]").addEventListener("input", (evt) => {
+      if ( evt?.data && isNaN( parseInt(evt.data) ) ) {
+        evt.target.value = evt.target?.value?.slice(0, -1);
+      }
+    })
+
+    const fields = {
+      "mobile": {
+        attempts: 0,
+        inc: () => {
+          fields["mobile"].attempts += 1;
+        }
+      }, 
+      "pass": {
+        attempts: 0,
+        inc: () => {
+          fields["pass"].attempts += 1;
+
+          // Field specific error
+          // FORM.statusMessage("Please Enter Password");
+
+          if (fields["pass"].attempts > 2) {
+            FORM.statusMessage("Change your password?");
+            FORM.FORM.querySelector("button[type='submit']").innerText = "Reset Password?";
+          }
+        }
+      }
+    }
+
+    FORM.validateForm = ({evt, formdata}) => {
+      // only passes if all required fields populated
+      let falsy = true;
+      for (const [field, value] of Object.entries(fields)) {
+        if ( formdata[field] == "" ) {
+          falsy = false;
+          FORM.statusMessage("Please Enter All Fields.");
+        } else {
+          value?.inc?.()
+        }
+      }
+      
+      if (falsy) {
+        const login = btoa(`${formdata["mobile"]}:${formdata["pass"]}`);
+        localStorage.setItem("mobile", formdata["mobile"]);
+        return FORM.submitForm(login);
+      }
+    };
+
+    FORM.submitForm = login
+  }
 }
 
 /**
@@ -330,3 +599,17 @@ function formatDBTimestamp() {
     return (elem.innerText = `Due ${date.getMonth() + 1}/${date.getDate()}`);
   });
 }
+
+function parseJwt (token) {
+  var base64Url = token.split('.')[1];
+  var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+
+  return JSON.parse(jsonPayload);
+}
+
+export const click_login = () => new Promise(() => {
+  document.getElementById("login").click();
+}) 

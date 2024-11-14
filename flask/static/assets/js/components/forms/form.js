@@ -23,7 +23,7 @@ export default class FormInteractivity {
             autoInit,
             form
         } = props;
-
+        
         if (autoInit === false) { 
             console.log("Form not initialized");
         } else if (autoInit !== true) {
@@ -33,6 +33,8 @@ export default class FormInteractivity {
                 console.warn("Form constructed but not initialized.", err);
             }
         } else {
+            // TODO: Rethink this
+            // calling functions from constructor is bad practice I hear.
             this.init(form)
         }
     }
@@ -54,29 +56,60 @@ export default class FormInteractivity {
             if (document.activeElement !== evt.submitter) {
                 return
             }
-            this.validateForm(evt)
+
+            const formdata = Object.fromEntries(new FormData(this.FORM).entries());
+
+            return this.validateForm({evt, formdata})
         })
 
-        this.FORM.querySelector(':is(button[type="submit"], fieldset + button:last-of-type)').addEventListener("mousedown", (evt) => {
+        const handleSubmit = (evt) => {
             this.FORM.dispatchEvent(new Event("submit"));
-        })
+        }
+        
+        this.FORM.querySelector(':is(button[type="submit"], fieldset + button:last-of-type)').addEventListener("mousedown", handleSubmit)
+        this.FORM.querySelector(':is(button[type="submit"], fieldset + button:last-of-type)').addEventListener("touchstart", handleSubmit)
+    }
+
+    statusMessage(message, level = "alert") {
+        if (!this.STATUS) {
+            this.STATUS = {};
+
+            this.STATUS.html = {
+                status: document.createElement("div"),
+                message: document.createElement("p")
+            };
+
+            this.STATUS.html.status.classList.add("status", level);
+            this.STATUS.html.status.appendChild(this.STATUS.html.message);
+
+            this.FORM.querySelector('legend').insertAdjacentElement('afterend', this.STATUS.html.status);
+        }
+
+        this.STATUS.html.message.innerText = "";
+        this.STATUS.html.status.classList.remove("alert", "info", "warning", "success");
+
+        if (message !== false) {
+            this.invalid = true;
+            this.STATUS.html.message.innerText = message;
+            this.STATUS.html.status.classList.add(level);
+        }
     }
 
     /**
-     * @public
+     * @public @override
      * @param {Event} evt 
      * @returns {void}
      */
     validateForm(evt) {
-        console.warn("Please implement the validateForm functionality.")
+        console.warn("Please implement and override the validateForm functionality.")
     }
 
     /**
-     * @public
+     * @public @override
      * @param {FormData} formdata 
      * @returns {void}
      */
     submitForm(formdata) {
-        console.warn("Please implement the submitForm functionality.")
+        console.warn("Please implement and override the submitForm functionality.")
     }
 }
