@@ -10,6 +10,16 @@
 
 # Server
 ## Python
+
+### email
+sent using my personal gmail currently
+```
+source venv/bin/activate
+py -m pip install -r venv/requirements/email.txt
+py -m aiosmtpd -n // smtp listening on port 8025
+```
+
+
 ### start 
 #### dev
 ```
