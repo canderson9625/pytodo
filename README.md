@@ -1,5 +1,5 @@
 # Technology Stack
-- Python3.12 Server
+- Python3.13 Server
     - API 
     - Jinja2 HTML templating
 - Client

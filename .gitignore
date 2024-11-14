@@ -2,5 +2,5 @@
 .secrets
 *.fig
 venv
-!venv/requirements.txt
+!venv/requirements
 __pycache__
