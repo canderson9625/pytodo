@@ -1,5 +1,5 @@
 .ignore
-
+.secrets
 *.fig
 venv
 !venv/requirements.txt
