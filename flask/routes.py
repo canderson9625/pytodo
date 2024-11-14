@@ -2,12 +2,13 @@ from flask import Flask, render_template, request, redirect, url_for
 from todo_app.api import create_todo, update_todo, delete_todo
 from todo_app.api.todo import get_todo, get_todos
 from todo_app.api.tag import get_tags
+from todo_app.api.auth import handle_authorization
 from todo_app.utils import dataExists
 from math import ceil
 import json
 
-indexRouteString = '/';
-app = Flask(__name__, static_url_path=indexRouteString + '/static')
+indexRouteStringLeadingTrailingSlash = '/';
+app = Flask(__name__, static_url_path=indexRouteStringLeadingTrailingSlash + '/static')
 
 # renders the passed template on GET otherwise applies the passed callback
 class req_method_handler:
@@ -29,9 +30,10 @@ def get_paged():
     lastpage = int(lastpage) if lastpage else 0
     return (page, pagesize, lastpage)
 
-@app.route(indexRouteString, methods=["GET"])
-@app.route('/' + indexRouteString[1:-1], methods=["GET"])
-def index_route():
+@app.route(indexRouteStringLeadingTrailingSlash, methods=["GET"])
+@app.route('/' + indexRouteStringLeadingTrailingSlash[1:-1], methods=["GET"])
+@handle_authorization
+def index_route(auth = None):
     page = request.args.get("page")
     tags = get_tags()
 
@@ -46,11 +48,16 @@ def index_route():
         title = f"Todos | Page {page}"
         list = get_todos(pagesize, pagesize * (page - 1))
 
-    return render_template("index.html", title=title, list=list, tags=tags, paged=(page, pagesize, lastpage), json=json)
+    if auth.data != None:
+        auth.data = render_template("index.html", title=title, list=list, tags=tags, paged=(page, pagesize, lastpage), json=json) 
+    else:
+        return render_template("index.html", title=title, list=list, tags=tags, paged=(page, pagesize, lastpage), json=json) 
+
+    return auth
 
 
-@app.route(indexRouteString + '<operation>/', methods=["GET", "POST", "DELETE"])
-@app.route(indexRouteString + '<operation>', methods=["GET", "POST", "DELETE"])
+@app.route(indexRouteStringLeadingTrailingSlash + '<operation>/', methods=["GET", "POST", "DELETE"])
+@app.route(indexRouteStringLeadingTrailingSlash + '<operation>', methods=["GET", "POST", "DELETE"])
 def route_handler(operation):
     route = operation.lower()
     tags = get_tags()
@@ -71,8 +78,8 @@ def route_handler(operation):
             return redirect(url_for("index_route"))
 
 
-@app.route(indexRouteString + '<operation>/<id>/', methods=["GET", "PUT", "DELETE"])
-@app.route(indexRouteString + '<operation>/<id>', methods=["GET", "PUT", "DELETE"])
+@app.route(indexRouteStringLeadingTrailingSlash + '<operation>/<id>/', methods=["GET", "PUT", "DELETE"])
+@app.route(indexRouteStringLeadingTrailingSlash + '<operation>/<id>', methods=["GET", "PUT", "DELETE"])
 def single_route_handler(operation, id):
     route = operation.lower()
     todo = get_todo(id)
@@ -93,7 +100,7 @@ def single_route_handler(operation, id):
 
 
 
-@app.route(indexRouteString + 'dev/<misc>', methods=["GET"])
+@app.route(indexRouteStringLeadingTrailingSlash + 'dev/<misc>', methods=["GET"])
 def dev_route(misc):
     tags = get_tags()
     title = f"Todos | Dev: {misc}"
