@@ -530,7 +530,11 @@ function dialogs() {
     const views = [];
     modal.querySelectorAll('dialog').forEach(elem => {
         const btn = document.querySelector('#' + elem.id.split("--")[1]+ '-todo')
-        views.push({elem, btn})
+        if (btn) {
+            views.push({elem, btn})
+        } else {
+            views.push({elem, btn: document.querySelector('#universal-menu li:nth-of-type(3)')});
+        }
     })
 
     // populate view properties and event listeners

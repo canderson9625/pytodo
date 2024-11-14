@@ -50,6 +50,41 @@ form,
 
         & legend {
             font-size: var(--font-heading);
+
+            & + :is(*, *:has( > label, > input):first-of-type):not(:empty, :has(>:empty)) {
+                margin-top: calc(var(--font-body) * 1.5);
+            }
+        }
+
+        & .status {
+            font-size: var(--font-heading-pixels-min);
+            grid-column: span 2;
+
+            &:is(.alert, .warning, .info, .success) {
+                --color: #fad6d6;
+                /* --red: #fad6d6;
+                --pink: #f9cfec;
+                --blue: #ccc9f1;
+                --green: #c4f2d6;
+                --yellow: #ebecb4; */
+                background-color: var(--color);
+                border-color: var(--color);
+                border-width: 2px;
+                padding: var(--padding);
+            }
+            &.warning {
+
+            }
+            &.info {
+
+            }
+            &.success {
+
+            }
+
+            & p {
+                margin: 0;
+            }
         }
 
         /* generic container selector */
@@ -59,10 +94,6 @@ form,
             grid-area: span 1 / span 2;
             width: 100%;
             margin-top: calc(var(--font-body) * 2);
-
-            &:first-of-type {
-                margin-top: calc(var(--font-body) * 1.5);
-            }
 
             & > label {
                 padding: var(--padd) var(--padding);

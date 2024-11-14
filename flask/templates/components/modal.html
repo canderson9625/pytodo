@@ -9,4 +9,15 @@
     <dialog id="modal--update" aria-modal="true">
         {# populated via js #}
     </dialog>
+    <dialog id="modal--login" aria-modal="true">
+        {% import "components/forms/forms.html" as forms %}
+        <form is="sealed-form">
+            <div class="blurred-bg"></div>
+            {% call forms.fieldset('Login') %}            
+                {{ forms.input('tel', "mobile", '', "placeholder-label") }}
+                {{ forms.input('text', "pass", '', "placeholder-label")}}
+            {% endcall %}
+            <button type="submit">Login</button>
+        </form>
+    </dialog>
 </dialog>
